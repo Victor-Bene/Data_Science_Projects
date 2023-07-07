@@ -5,6 +5,12 @@
 <body>
   <h1>Data Science Portfolio</h1>
 
+<h2>Contact Information</h2>
+<div>
+  <img src="linkedin_logo.png" alt="LinkedIn Logo" height="30px" width="30px">
+  <span>Email: <a href="mailto:victorhlopesbenedito@gmail.com">victorhlopesbenedito@gmail.com</a></span>
+</div>
+
   <h2>Overview</h2>
   <p>In this repository, you will find a well-organized collection of projects, with detailed information about each one. Each project includes a description, details about the dataset used, techniques and tools employed, as well as key findings and learnings.</p>
   
