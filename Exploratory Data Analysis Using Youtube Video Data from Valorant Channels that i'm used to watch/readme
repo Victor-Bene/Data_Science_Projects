@@ -1,0 +1,1 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Victor-Bene/DataScience_projects/master?labpath=Exploratory%20Data%20Analysis%20Using%20Youtube%20Video%20Data%20from%20Valorant%20Channels%20that%20i'm%20used%20to%20watch%2FData_Analysis_Using_Youtube_Video_Data_from_Valorant_Channels_that_i'm_used_to_watch.ipynb)
