@@ -27,7 +27,7 @@
   <h3>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen</h3>
   <p>In this project, I explored a dataset of financial time series from Raizen Company and other correlated. I performed exploratory data analysis to identify patterns, trends, and relevant insights. I utilized popular visualization libraries such as matplotlib and seaborn to create graphs and visualizations that aided in understanding the data.</p>
 
-  <h3>(NLP) Graph analysis and visualization of the GOT Books using NetworkX and Pivys</h3>
+  <h3>(NLP/NetworkX/Pyvis) Graph analysis and visualization of the GOT Books using NetworkX and Pivys</h3>
   <p>In this project, I worked with the Game of Thrones (GOT) books dataset to perform graph analysis and visualization. I used libraries such as NetworkX and Pivys to analyze the relationships between characters and visualize the network of interactions. This provided insights into the social structure and dynamics within the books.</p>
 
   <h3>(EDA and APIs) Exploratory Data Analysis Using Youtube Video Data from Valorant Channels</h3>
