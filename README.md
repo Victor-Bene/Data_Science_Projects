@@ -14,7 +14,8 @@
   </div>
   
   <a href="www.linkedin.com/in/victor-benedito">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css"></a>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg",height="50px" width="50px" />
+          </a>
 </div>
 
   <h2>Overview</h2>
