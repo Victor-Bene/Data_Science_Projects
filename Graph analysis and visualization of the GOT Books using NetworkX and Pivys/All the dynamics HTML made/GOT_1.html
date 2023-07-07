@@ -1,0 +1,358 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "white"}, "id": "Ned", "label": "Ned", "shape": "dot", "size": 40}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Theon", "label": "Theon", "shape": "dot", "size": 23}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Catelyn", "label": "Catelyn", "shape": "dot", "size": 31}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Rickon", "label": "Rickon", "shape": "dot", "size": 23}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Bran", "label": "Bran", "shape": "dot", "size": 25}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Robert", "label": "Robert", "shape": "dot", "size": 35}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Brynden", "label": "Brynden", "shape": "dot", "size": 22}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lysa", "label": "Lysa", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Luwin", "label": "Luwin", "shape": "dot", "size": 25}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jaime", "label": "Jaime", "shape": "dot", "size": 31}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "The Hound", "label": "The Hound", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Cersei", "label": "Cersei", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lyanna", "label": "Lyanna", "shape": "dot", "size": 21}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jon", "label": "Jon", "shape": "dot", "size": 35}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Benjen", "label": "Benjen", "shape": "dot", "size": 22}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Joffrey", "label": "Joffrey", "shape": "dot", "size": 28}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Arya", "label": "Arya", "shape": "dot", "size": 33}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Rodrik", "label": "Rodrik", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Renly", "label": "Renly", "shape": "dot", "size": 22}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Meryn", "label": "Meryn", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jorah", "label": "Jorah", "shape": "dot", "size": 22}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Daenerys", "label": "Daenerys", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Stannis", "label": "Stannis", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Tyrion", "label": "Tyrion", "shape": "dot", "size": 32}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mordane", "label": "Mordane", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Sansa", "label": "Sansa", "shape": "dot", "size": 32}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jory", "label": "Jory", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lady", "label": "Lady", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Nymeria", "label": "Nymeria", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Pycelle", "label": "Pycelle", "shape": "dot", "size": 25}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Varys", "label": "Varys", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Littlefinger", "label": "Littlefinger", "shape": "dot", "size": 27}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Barristan", "label": "Barristan", "shape": "dot", "size": 24}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Ilyn", "label": "Ilyn", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Syrio", "label": "Syrio", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Janos", "label": "Janos", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Margaery", "label": "Margaery", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Gendry", "label": "Gendry", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lancel", "label": "Lancel", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "The Mountain", "label": "The Mountain", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Loras", "label": "Loras", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Thoros", "label": "Thoros", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Yoren", "label": "Yoren", "shape": "dot", "size": 21}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Viserys", "label": "Viserys", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Tywin", "label": "Tywin", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lothar", "label": "Lothar", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Kevan", "label": "Kevan", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Greatjon", "label": "Greatjon", "shape": "dot", "size": 22}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Roose", "label": "Roose", "shape": "dot", "size": 21}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Robb", "label": "Robb", "shape": "dot", "size": 29}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Rickard", "label": "Rickard", "shape": "dot", "size": 21}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Hodor", "label": "Hodor", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Tommen", "label": "Tommen", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Grenn", "label": "Grenn", "shape": "dot", "size": 21}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Alliser", "label": "Alliser", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Aemon", "label": "Aemon", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Bowen", "label": "Bowen", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Jeor", "label": "Jeor", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Rast", "label": "Rast", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Samwell", "label": "Samwell", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mace", "label": "Mace", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Bronn", "label": "Bronn", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Othell", "label": "Othell", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Dickon", "label": "Dickon", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Osha", "label": "Osha", "shape": "dot", "size": 19}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Edmure", "label": "Edmure", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Khal", "label": "Khal", "shape": "dot", "size": 20}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Marillion", "label": "Marillion", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Robett", "label": "Robett", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Walda", "label": "Walda", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Myrcella", "label": "Myrcella", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Beric", "label": "Beric", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Dontos", "label": "Dontos", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mance", "label": "Mance", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Shae", "label": "Shae", "shape": "dot", "size": 16}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Irri", "label": "Irri", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Qotho", "label": "Qotho", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mirri", "label": "Mirri", "shape": "dot", "size": 18}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Rakharo", "label": "Rakharo", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Doreah", "label": "Doreah", "shape": "dot", "size": 17}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Olyvar", "label": "Olyvar", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Yohn", "label": "Yohn", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Pypar", "label": "Pypar", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Doran", "label": "Doran", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Randyll", "label": "Randyll", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Anguy", "label": "Anguy", "shape": "dot", "size": 15}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Podrick", "label": "Podrick", "shape": "dot", "size": 15}]);
+                  edges = new vis.DataSet([{"from": "Ned", "to": "Theon", "value": 20, "width": 1}, {"from": "Ned", "to": "Catelyn", "value": 419, "width": 1}, {"from": "Ned", "to": "Rickon", "value": 20, "width": 1}, {"from": "Ned", "to": "Bran", "value": 19, "width": 1}, {"from": "Ned", "to": "Robert", "value": 1103, "width": 1}, {"from": "Ned", "to": "Brynden", "value": 19, "width": 1}, {"from": "Ned", "to": "Lysa", "value": 30, "width": 1}, {"from": "Ned", "to": "Luwin", "value": 77, "width": 1}, {"from": "Ned", "to": "Jaime", "value": 89, "width": 1}, {"from": "Ned", "to": "The Hound", "value": 37, "width": 1}, {"from": "Ned", "to": "Cersei", "value": 107, "width": 1}, {"from": "Ned", "to": "Lyanna", "value": 80, "width": 1}, {"from": "Ned", "to": "Jon", "value": 102, "width": 1}, {"from": "Ned", "to": "Benjen", "value": 12, "width": 1}, {"from": "Ned", "to": "Joffrey", "value": 54, "width": 1}, {"from": "Ned", "to": "Arya", "value": 151, "width": 1}, {"from": "Ned", "to": "Rodrik", "value": 31, "width": 1}, {"from": "Ned", "to": "Renly", "value": 36, "width": 1}, {"from": "Ned", "to": "Meryn", "value": 6, "width": 1}, {"from": "Ned", "to": "Jorah", "value": 22, "width": 1}, {"from": "Ned", "to": "Daenerys", "value": 1, "width": 1}, {"from": "Ned", "to": "Stannis", "value": 100, "width": 1}, {"from": "Ned", "to": "Tyrion", "value": 9, "width": 1}, {"from": "Ned", "to": "Mordane", "value": 23, "width": 1}, {"from": "Ned", "to": "Sansa", "value": 81, "width": 1}, {"from": "Ned", "to": "Jory", "value": 165, "width": 1}, {"from": "Ned", "to": "Lady", "value": 4, "width": 1}, {"from": "Ned", "to": "Nymeria", "value": 3, "width": 1}, {"from": "Ned", "to": "Pycelle", "value": 167, "width": 1}, {"from": "Ned", "to": "Varys", "value": 106, "width": 1}, {"from": "Ned", "to": "Littlefinger", "value": 300, "width": 1}, {"from": "Ned", "to": "Barristan", "value": 57, "width": 1}, {"from": "Ned", "to": "Ilyn", "value": 1, "width": 1}, {"from": "Ned", "to": "Syrio", "value": 19, "width": 1}, {"from": "Ned", "to": "Janos", "value": 21, "width": 1}, {"from": "Ned", "to": "Margaery", "value": 5, "width": 1}, {"from": "Ned", "to": "Gendry", "value": 21, "width": 1}, {"from": "Ned", "to": "Lancel", "value": 4, "width": 1}, {"from": "Ned", "to": "The Mountain", "value": 43, "width": 1}, {"from": "Ned", "to": "Loras", "value": 14, "width": 1}, {"from": "Ned", "to": "Thoros", "value": 4, "width": 1}, {"from": "Ned", "to": "Yoren", "value": 5, "width": 1}, {"from": "Ned", "to": "Viserys", "value": 9, "width": 1}, {"from": "Ned", "to": "Tywin", "value": 9, "width": 1}, {"from": "Ned", "to": "Lothar", "value": 1, "width": 1}, {"from": "Ned", "to": "Kevan", "value": 3, "width": 1}, {"from": "Ned", "to": "Greatjon", "value": 22, "width": 1}, {"from": "Ned", "to": "Roose", "value": 5, "width": 1}, {"from": "Ned", "to": "Robb", "value": 17, "width": 1}, {"from": "Ned", "to": "Rickard", "value": 1, "width": 1}, {"from": "Theon", "to": "Jory", "value": 16, "width": 1}, {"from": "Theon", "to": "Jon", "value": 25, "width": 1}, {"from": "Theon", "to": "Robert", "value": 4, "width": 1}, {"from": "Theon", "to": "Benjen", "value": 11, "width": 1}, {"from": "Theon", "to": "Robb", "value": 34, "width": 1}, {"from": "Theon", "to": "Rodrik", "value": 12, "width": 1}, {"from": "Theon", "to": "Joffrey", "value": 4, "width": 1}, {"from": "Theon", "to": "Mordane", "value": 2, "width": 1}, {"from": "Theon", "to": "Luwin", "value": 54, "width": 1}, {"from": "Theon", "to": "Catelyn", "value": 70, "width": 1}, {"from": "Theon", "to": "Rickon", "value": 8, "width": 1}, {"from": "Theon", "to": "Hodor", "value": 13, "width": 1}, {"from": "Theon", "to": "Yoren", "value": 2, "width": 1}, {"from": "Theon", "to": "Bran", "value": 22, "width": 1}, {"from": "Theon", "to": "Greatjon", "value": 16, "width": 1}, {"from": "Theon", "to": "Brynden", "value": 13, "width": 1}, {"from": "Theon", "to": "Jaime", "value": 8, "width": 1}, {"from": "Jory", "to": "Jon", "value": 13, "width": 1}, {"from": "Jory", "to": "Robb", "value": 15, "width": 1}, {"from": "Jory", "to": "Bran", "value": 9, "width": 1}, {"from": "Jory", "to": "Robert", "value": 27, "width": 1}, {"from": "Jory", "to": "Luwin", "value": 5, "width": 1}, {"from": "Jory", "to": "Arya", "value": 53, "width": 1}, {"from": "Jory", "to": "Sansa", "value": 35, "width": 1}, {"from": "Jory", "to": "Mordane", "value": 16, "width": 1}, {"from": "Jory", "to": "Catelyn", "value": 5, "width": 1}, {"from": "Jory", "to": "Pycelle", "value": 4, "width": 1}, {"from": "Jory", "to": "Stannis", "value": 1, "width": 1}, {"from": "Jory", "to": "Lyanna", "value": 8, "width": 1}, {"from": "Jory", "to": "Rodrik", "value": 6, "width": 1}, {"from": "Jory", "to": "Barristan", "value": 5, "width": 1}, {"from": "Jory", "to": "Lysa", "value": 5, "width": 1}, {"from": "Jory", "to": "Littlefinger", "value": 20, "width": 1}, {"from": "Jory", "to": "Jaime", "value": 3, "width": 1}, {"from": "Jory", "to": "Greatjon", "value": 6, "width": 1}, {"from": "Jon", "to": "Robb", "value": 83, "width": 1}, {"from": "Jon", "to": "Rickon", "value": 53, "width": 1}, {"from": "Jon", "to": "Bran", "value": 43, "width": 1}, {"from": "Jon", "to": "Catelyn", "value": 51, "width": 1}, {"from": "Jon", "to": "Robert", "value": 77, "width": 1}, {"from": "Jon", "to": "Joffrey", "value": 21, "width": 1}, {"from": "Jon", "to": "Jaime", "value": 15, "width": 1}, {"from": "Jon", "to": "Tyrion", "value": 175, "width": 1}, {"from": "Jon", "to": "Cersei", "value": 7, "width": 1}, {"from": "Jon", "to": "Benjen", "value": 109, "width": 1}, {"from": "Jon", "to": "Luwin", "value": 62, "width": 1}, {"from": "Jon", "to": "Sansa", "value": 19, "width": 1}, {"from": "Jon", "to": "Arya", "value": 138, "width": 1}, {"from": "Jon", "to": "Nymeria", "value": 32, "width": 1}, {"from": "Jon", "to": "Tommen", "value": 2, "width": 1}, {"from": "Jon", "to": "Rodrik", "value": 4, "width": 1}, {"from": "Jon", "to": "Mordane", "value": 23, "width": 1}, {"from": "Jon", "to": "Yoren", "value": 38, "width": 1}, {"from": "Jon", "to": "Grenn", "value": 181, "width": 1}, {"from": "Jon", "to": "Alliser", "value": 136, "width": 1}, {"from": "Jon", "to": "Aemon", "value": 162, "width": 1}, {"from": "Jon", "to": "Bowen", "value": 42, "width": 1}, {"from": "Jon", "to": "Jeor", "value": 7, "width": 1}, {"from": "Jon", "to": "Pycelle", "value": 8, "width": 1}, {"from": "Jon", "to": "Littlefinger", "value": 3, "width": 1}, {"from": "Jon", "to": "Rast", "value": 26, "width": 1}, {"from": "Jon", "to": "Samwell", "value": 145, "width": 1}, {"from": "Jon", "to": "Mace", "value": 5, "width": 1}, {"from": "Jon", "to": "Stannis", "value": 18, "width": 1}, {"from": "Jon", "to": "Lyanna", "value": 11, "width": 1}, {"from": "Jon", "to": "Brynden", "value": 5, "width": 1}, {"from": "Jon", "to": "Lysa", "value": 9, "width": 1}, {"from": "Jon", "to": "Bronn", "value": 2, "width": 1}, {"from": "Jon", "to": "Othell", "value": 4, "width": 1}, {"from": "Jon", "to": "Dickon", "value": 3, "width": 1}, {"from": "Jon", "to": "Barristan", "value": 6, "width": 1}, {"from": "Jon", "to": "Jorah", "value": 10, "width": 1}, {"from": "Jon", "to": "Osha", "value": 4, "width": 1}, {"from": "Robb", "to": "Bran", "value": 38, "width": 1}, {"from": "Robb", "to": "Rickon", "value": 27, "width": 1}, {"from": "Robb", "to": "Arya", "value": 5, "width": 1}, {"from": "Robb", "to": "Rodrik", "value": 13, "width": 1}, {"from": "Robb", "to": "Robert", "value": 2, "width": 1}, {"from": "Robb", "to": "Jaime", "value": 12, "width": 1}, {"from": "Robb", "to": "Barristan", "value": 5, "width": 1}, {"from": "Robb", "to": "Catelyn", "value": 57, "width": 1}, {"from": "Robb", "to": "Luwin", "value": 38, "width": 1}, {"from": "Robb", "to": "Hodor", "value": 11, "width": 1}, {"from": "Robb", "to": "Tyrion", "value": 4, "width": 1}, {"from": "Robb", "to": "Yoren", "value": 10, "width": 1}, {"from": "Robb", "to": "Alliser", "value": 5, "width": 1}, {"from": "Robb", "to": "Benjen", "value": 6, "width": 1}, {"from": "Robb", "to": "Sansa", "value": 17, "width": 1}, {"from": "Robb", "to": "Joffrey", "value": 10, "width": 1}, {"from": "Robb", "to": "Greatjon", "value": 25, "width": 1}, {"from": "Robb", "to": "Osha", "value": 5, "width": 1}, {"from": "Robb", "to": "Brynden", "value": 8, "width": 1}, {"from": "Robb", "to": "Kevan", "value": 10, "width": 1}, {"from": "Robb", "to": "Roose", "value": 5, "width": 1}, {"from": "Robb", "to": "Samwell", "value": 6, "width": 1}, {"from": "Robb", "to": "Tywin", "value": 1, "width": 1}, {"from": "Robb", "to": "Edmure", "value": 6, "width": 1}, {"from": "Robb", "to": "Grenn", "value": 4, "width": 1}, {"from": "Bran", "to": "Catelyn", "value": 45, "width": 1}, {"from": "Bran", "to": "Rickon", "value": 47, "width": 1}, {"from": "Bran", "to": "Barristan", "value": 6, "width": 1}, {"from": "Bran", "to": "Hodor", "value": 19, "width": 1}, {"from": "Bran", "to": "Lady", "value": 3, "width": 1}, {"from": "Bran", "to": "Luwin", "value": 72, "width": 1}, {"from": "Bran", "to": "Varys", "value": 4, "width": 1}, {"from": "Bran", "to": "Littlefinger", "value": 5, "width": 1}, {"from": "Bran", "to": "Alliser", "value": 2, "width": 1}, {"from": "Bran", "to": "Tyrion", "value": 4, "width": 1}, {"from": "Bran", "to": "Arya", "value": 10, "width": 1}, {"from": "Bran", "to": "Sansa", "value": 18, "width": 1}, {"from": "Bran", "to": "Yoren", "value": 11, "width": 1}, {"from": "Bran", "to": "Robert", "value": 5, "width": 1}, {"from": "Bran", "to": "Lyanna", "value": 5, "width": 1}, {"from": "Bran", "to": "Greatjon", "value": 3, "width": 1}, {"from": "Rickon", "to": "Sansa", "value": 15, "width": 1}, {"from": "Rickon", "to": "Robert", "value": 2, "width": 1}, {"from": "Rickon", "to": "Catelyn", "value": 19, "width": 1}, {"from": "Rickon", "to": "Arya", "value": 17, "width": 1}, {"from": "Rickon", "to": "Luwin", "value": 64, "width": 1}, {"from": "Rickon", "to": "Tyrion", "value": 24, "width": 1}, {"from": "Rickon", "to": "Khal", "value": 1, "width": 1}, {"from": "Rickon", "to": "Yoren", "value": 4, "width": 1}, {"from": "Rickon", "to": "Lysa", "value": 4, "width": 1}, {"from": "Rickon", "to": "Greatjon", "value": 4, "width": 1}, {"from": "Rickon", "to": "Rickard", "value": 2, "width": 1}, {"from": "Rickon", "to": "Osha", "value": 1, "width": 1}, {"from": "Catelyn", "to": "Luwin", "value": 126, "width": 1}, {"from": "Catelyn", "to": "Brynden", "value": 115, "width": 1}, {"from": "Catelyn", "to": "Lysa", "value": 200, "width": 1}, {"from": "Catelyn", "to": "Robert", "value": 96, "width": 1}, {"from": "Catelyn", "to": "Tyrion", "value": 179, "width": 1}, {"from": "Catelyn", "to": "Joffrey", "value": 11, "width": 1}, {"from": "Catelyn", "to": "Arya", "value": 19, "width": 1}, {"from": "Catelyn", "to": "Rodrik", "value": 141, "width": 1}, {"from": "Catelyn", "to": "Jaime", "value": 46, "width": 1}, {"from": "Catelyn", "to": "Littlefinger", "value": 78, "width": 1}, {"from": "Catelyn", "to": "Varys", "value": 18, "width": 1}, {"from": "Catelyn", "to": "Grenn", "value": 5, "width": 1}, {"from": "Catelyn", "to": "Marillion", "value": 36, "width": 1}, {"from": "Catelyn", "to": "Yoren", "value": 17, "width": 1}, {"from": "Catelyn", "to": "Bronn", "value": 89, "width": 1}, {"from": "Catelyn", "to": "Sansa", "value": 17, "width": 1}, {"from": "Catelyn", "to": "Cersei", "value": 8, "width": 1}, {"from": "Catelyn", "to": "Edmure", "value": 24, "width": 1}, {"from": "Catelyn", "to": "Janos", "value": 6, "width": 1}, {"from": "Catelyn", "to": "Greatjon", "value": 40, "width": 1}, {"from": "Catelyn", "to": "Robett", "value": 11, "width": 1}, {"from": "Catelyn", "to": "The Mountain", "value": 7, "width": 1}, {"from": "Catelyn", "to": "Roose", "value": 20, "width": 1}, {"from": "Catelyn", "to": "Tywin", "value": 5, "width": 1}, {"from": "Catelyn", "to": "Stannis", "value": 18, "width": 1}, {"from": "Catelyn", "to": "Walda", "value": 5, "width": 1}, {"from": "Catelyn", "to": "Rickard", "value": 11, "width": 1}, {"from": "Sansa", "to": "Arya", "value": 386, "width": 1}, {"from": "Sansa", "to": "Mordane", "value": 161, "width": 1}, {"from": "Sansa", "to": "Myrcella", "value": 11, "width": 1}, {"from": "Sansa", "to": "Joffrey", "value": 369, "width": 1}, {"from": "Sansa", "to": "Lady", "value": 60, "width": 1}, {"from": "Sansa", "to": "Nymeria", "value": 33, "width": 1}, {"from": "Sansa", "to": "The Hound", "value": 53, "width": 1}, {"from": "Sansa", "to": "Renly", "value": 4, "width": 1}, {"from": "Sansa", "to": "Barristan", "value": 3, "width": 1}, {"from": "Sansa", "to": "Jaime", "value": 32, "width": 1}, {"from": "Sansa", "to": "Robert", "value": 44, "width": 1}, {"from": "Sansa", "to": "Cersei", "value": 27, "width": 1}, {"from": "Sansa", "to": "Lyanna", "value": 6, "width": 1}, {"from": "Sansa", "to": "Thoros", "value": 5, "width": 1}, {"from": "Sansa", "to": "Rodrik", "value": 4, "width": 1}, {"from": "Sansa", "to": "Mace", "value": 4, "width": 1}, {"from": "Sansa", "to": "Loras", "value": 33, "width": 1}, {"from": "Sansa", "to": "Littlefinger", "value": 18, "width": 1}, {"from": "Sansa", "to": "Beric", "value": 9, "width": 1}, {"from": "Sansa", "to": "Yoren", "value": 3, "width": 1}, {"from": "Sansa", "to": "The Mountain", "value": 5, "width": 1}, {"from": "Sansa", "to": "Hodor", "value": 8, "width": 1}, {"from": "Sansa", "to": "Stannis", "value": 16, "width": 1}, {"from": "Sansa", "to": "Pycelle", "value": 45, "width": 1}, {"from": "Sansa", "to": "Janos", "value": 12, "width": 1}, {"from": "Sansa", "to": "Dontos", "value": 8, "width": 1}, {"from": "Sansa", "to": "Meryn", "value": 14, "width": 1}, {"from": "Sansa", "to": "Varys", "value": 12, "width": 1}, {"from": "Sansa", "to": "Luwin", "value": 5, "width": 1}, {"from": "Luwin", "to": "Benjen", "value": 15, "width": 1}, {"from": "Luwin", "to": "Lysa", "value": 2, "width": 1}, {"from": "Luwin", "to": "Rodrik", "value": 9, "width": 1}, {"from": "Luwin", "to": "Varys", "value": 5, "width": 1}, {"from": "Luwin", "to": "Hodor", "value": 39, "width": 1}, {"from": "Luwin", "to": "Tyrion", "value": 12, "width": 1}, {"from": "Luwin", "to": "Mance", "value": 3, "width": 1}, {"from": "Luwin", "to": "Aemon", "value": 6, "width": 1}, {"from": "Luwin", "to": "Roose", "value": 1, "width": 1}, {"from": "Luwin", "to": "Osha", "value": 59, "width": 1}, {"from": "Luwin", "to": "Rickard", "value": 1, "width": 1}, {"from": "Luwin", "to": "Greatjon", "value": 5, "width": 1}, {"from": "Luwin", "to": "Arya", "value": 2, "width": 1}, {"from": "Robert", "to": "Cersei", "value": 113, "width": 1}, {"from": "Robert", "to": "Jaime", "value": 83, "width": 1}, {"from": "Robert", "to": "Lyanna", "value": 55, "width": 1}, {"from": "Robert", "to": "Lysa", "value": 35, "width": 1}, {"from": "Robert", "to": "Benjen", "value": 16, "width": 1}, {"from": "Robert", "to": "Stannis", "value": 72, "width": 1}, {"from": "Robert", "to": "Tyrion", "value": 54, "width": 1}, {"from": "Robert", "to": "Meryn", "value": 8, "width": 1}, {"from": "Robert", "to": "Jorah", "value": 18, "width": 1}, {"from": "Robert", "to": "Mordane", "value": 13, "width": 1}, {"from": "Robert", "to": "Barristan", "value": 42, "width": 1}, {"from": "Robert", "to": "Arya", "value": 12, "width": 1}, {"from": "Robert", "to": "Varys", "value": 20, "width": 1}, {"from": "Robert", "to": "Littlefinger", "value": 54, "width": 1}, {"from": "Robert", "to": "Renly", "value": 13, "width": 1}, {"from": "Robert", "to": "Pycelle", "value": 58, "width": 1}, {"from": "Robert", "to": "Ilyn", "value": 5, "width": 1}, {"from": "Robert", "to": "Lancel", "value": 7, "width": 1}, {"from": "Robert", "to": "Hodor", "value": 6, "width": 1}, {"from": "Robert", "to": "Loras", "value": 3, "width": 1}, {"from": "Robert", "to": "Gendry", "value": 18, "width": 1}, {"from": "Robert", "to": "Syrio", "value": 2, "width": 1}, {"from": "Robert", "to": "Roose", "value": 8, "width": 1}, {"from": "Robert", "to": "Yoren", "value": 5, "width": 1}, {"from": "Robert", "to": "Brynden", "value": 5, "width": 1}, {"from": "Robert", "to": "The Hound", "value": 2, "width": 1}, {"from": "Robert", "to": "Tywin", "value": 4, "width": 1}, {"from": "Robert", "to": "Joffrey", "value": 40, "width": 1}, {"from": "Robert", "to": "Daenerys", "value": 6, "width": 1}, {"from": "Robert", "to": "Aemon", "value": 10, "width": 1}, {"from": "Robert", "to": "Viserys", "value": 10, "width": 1}, {"from": "Robert", "to": "Osha", "value": 5, "width": 1}, {"from": "Robert", "to": "Tommen", "value": 7, "width": 1}, {"from": "Brynden", "to": "Rodrik", "value": 7, "width": 1}, {"from": "Brynden", "to": "Tyrion", "value": 18, "width": 1}, {"from": "Brynden", "to": "Lysa", "value": 35, "width": 1}, {"from": "Brynden", "to": "Edmure", "value": 6, "width": 1}, {"from": "Brynden", "to": "Greatjon", "value": 8, "width": 1}, {"from": "Brynden", "to": "Roose", "value": 4, "width": 1}, {"from": "Brynden", "to": "Tywin", "value": 5, "width": 1}, {"from": "Brynden", "to": "Jaime", "value": 17, "width": 1}, {"from": "Brynden", "to": "Renly", "value": 2, "width": 1}, {"from": "Brynden", "to": "Rickard", "value": 3, "width": 1}, {"from": "Lysa", "to": "Jorah", "value": 5, "width": 1}, {"from": "Lysa", "to": "Stannis", "value": 20, "width": 1}, {"from": "Lysa", "to": "Varys", "value": 6, "width": 1}, {"from": "Lysa", "to": "Littlefinger", "value": 17, "width": 1}, {"from": "Lysa", "to": "Tyrion", "value": 38, "width": 1}, {"from": "Lysa", "to": "Jaime", "value": 25, "width": 1}, {"from": "Lysa", "to": "Bronn", "value": 17, "width": 1}, {"from": "Lysa", "to": "Marillion", "value": 4, "width": 1}, {"from": "Lysa", "to": "Rodrik", "value": 6, "width": 1}, {"from": "Lysa", "to": "Shae", "value": 6, "width": 1}, {"from": "Lysa", "to": "Edmure", "value": 6, "width": 1}, {"from": "Lysa", "to": "Arya", "value": 6, "width": 1}, {"from": "Daenerys", "to": "Viserys", "value": 8, "width": 1}, {"from": "Daenerys", "to": "Khal", "value": 11, "width": 1}, {"from": "Daenerys", "to": "Jorah", "value": 22, "width": 1}, {"from": "Daenerys", "to": "Littlefinger", "value": 5, "width": 1}, {"from": "Daenerys", "to": "Irri", "value": 4, "width": 1}, {"from": "Daenerys", "to": "Varys", "value": 4, "width": 1}, {"from": "Daenerys", "to": "Qotho", "value": 3, "width": 1}, {"from": "Daenerys", "to": "Mirri", "value": 6, "width": 1}, {"from": "Viserys", "to": "Khal", "value": 77, "width": 1}, {"from": "Viserys", "to": "Jorah", "value": 98, "width": 1}, {"from": "Viserys", "to": "Irri", "value": 25, "width": 1}, {"from": "Viserys", "to": "Cersei", "value": 10, "width": 1}, {"from": "Viserys", "to": "Rakharo", "value": 5, "width": 1}, {"from": "Viserys", "to": "Doreah", "value": 6, "width": 1}, {"from": "Viserys", "to": "Qotho", "value": 7, "width": 1}, {"from": "Viserys", "to": "Aemon", "value": 5, "width": 1}, {"from": "Khal", "to": "Jorah", "value": 88, "width": 1}, {"from": "Khal", "to": "Qotho", "value": 33, "width": 1}, {"from": "Khal", "to": "Doreah", "value": 8, "width": 1}, {"from": "Khal", "to": "Pycelle", "value": 7, "width": 1}, {"from": "Khal", "to": "Irri", "value": 20, "width": 1}, {"from": "Khal", "to": "Hodor", "value": 2, "width": 1}, {"from": "Khal", "to": "Mirri", "value": 22, "width": 1}, {"from": "Khal", "to": "Rakharo", "value": 9, "width": 1}, {"from": "Jorah", "to": "Doreah", "value": 7, "width": 1}, {"from": "Jorah", "to": "Syrio", "value": 4, "width": 1}, {"from": "Jorah", "to": "Irri", "value": 22, "width": 1}, {"from": "Jorah", "to": "Stannis", "value": 4, "width": 1}, {"from": "Jorah", "to": "Mirri", "value": 68, "width": 1}, {"from": "Jorah", "to": "Qotho", "value": 54, "width": 1}, {"from": "Jorah", "to": "Arya", "value": 5, "width": 1}, {"from": "Jorah", "to": "Rakharo", "value": 7, "width": 1}, {"from": "Jaime", "to": "The Hound", "value": 38, "width": 1}, {"from": "Jaime", "to": "Joffrey", "value": 46, "width": 1}, {"from": "Jaime", "to": "Meryn", "value": 5, "width": 1}, {"from": "Jaime", "to": "Tyrion", "value": 109, "width": 1}, {"from": "Jaime", "to": "Tommen", "value": 10, "width": 1}, {"from": "Jaime", "to": "Cersei", "value": 21, "width": 1}, {"from": "Jaime", "to": "Myrcella", "value": 6, "width": 1}, {"from": "Jaime", "to": "Barristan", "value": 10, "width": 1}, {"from": "Jaime", "to": "Loras", "value": 14, "width": 1}, {"from": "Jaime", "to": "Pycelle", "value": 4, "width": 1}, {"from": "Jaime", "to": "The Mountain", "value": 11, "width": 1}, {"from": "Jaime", "to": "Thoros", "value": 9, "width": 1}, {"from": "Jaime", "to": "Mordane", "value": 3, "width": 1}, {"from": "Jaime", "to": "Renly", "value": 3, "width": 1}, {"from": "Jaime", "to": "Littlefinger", "value": 18, "width": 1}, {"from": "Jaime", "to": "Rodrik", "value": 2, "width": 1}, {"from": "Jaime", "to": "Bronn", "value": 14, "width": 1}, {"from": "Jaime", "to": "Arya", "value": 3, "width": 1}, {"from": "Jaime", "to": "Kevan", "value": 10, "width": 1}, {"from": "Jaime", "to": "Stannis", "value": 5, "width": 1}, {"from": "Jaime", "to": "Varys", "value": 2, "width": 1}, {"from": "Jaime", "to": "Tywin", "value": 3, "width": 1}, {"from": "Jaime", "to": "Roose", "value": 3, "width": 1}, {"from": "The Hound", "to": "Tyrion", "value": 5, "width": 1}, {"from": "The Hound", "to": "Cersei", "value": 7, "width": 1}, {"from": "The Hound", "to": "Barristan", "value": 5, "width": 1}, {"from": "The Hound", "to": "Joffrey", "value": 33, "width": 1}, {"from": "The Hound", "to": "Littlefinger", "value": 6, "width": 1}, {"from": "The Hound", "to": "Janos", "value": 6, "width": 1}, {"from": "Cersei", "to": "Tyrion", "value": 30, "width": 1}, {"from": "Cersei", "to": "Tommen", "value": 9, "width": 1}, {"from": "Cersei", "to": "Joffrey", "value": 51, "width": 1}, {"from": "Cersei", "to": "Arya", "value": 5, "width": 1}, {"from": "Cersei", "to": "Lyanna", "value": 5, "width": 1}, {"from": "Cersei", "to": "Varys", "value": 15, "width": 1}, {"from": "Cersei", "to": "Pycelle", "value": 11, "width": 1}, {"from": "Cersei", "to": "Littlefinger", "value": 4, "width": 1}, {"from": "Cersei", "to": "Barristan", "value": 15, "width": 1}, {"from": "Cersei", "to": "Myrcella", "value": 5, "width": 1}, {"from": "Cersei", "to": "Janos", "value": 5, "width": 1}, {"from": "Cersei", "to": "Stannis", "value": 20, "width": 1}, {"from": "Lyanna", "to": "Littlefinger", "value": 5, "width": 1}, {"from": "Lyanna", "to": "Arya", "value": 9, "width": 1}, {"from": "Lyanna", "to": "Margaery", "value": 6, "width": 1}, {"from": "Lyanna", "to": "Bronn", "value": 5, "width": 1}, {"from": "Lyanna", "to": "Varys", "value": 2, "width": 1}, {"from": "Lyanna", "to": "Rickard", "value": 5, "width": 1}, {"from": "Lyanna", "to": "Osha", "value": 8, "width": 1}, {"from": "Benjen", "to": "Tyrion", "value": 37, "width": 1}, {"from": "Benjen", "to": "Yoren", "value": 26, "width": 1}, {"from": "Benjen", "to": "Aemon", "value": 5, "width": 1}, {"from": "Benjen", "to": "Alliser", "value": 8, "width": 1}, {"from": "Benjen", "to": "Arya", "value": 5, "width": 1}, {"from": "Benjen", "to": "Grenn", "value": 7, "width": 1}, {"from": "Benjen", "to": "Bowen", "value": 6, "width": 1}, {"from": "Benjen", "to": "Samwell", "value": 7, "width": 1}, {"from": "Benjen", "to": "Mance", "value": 5, "width": 1}, {"from": "Joffrey", "to": "Tommen", "value": 22, "width": 1}, {"from": "Joffrey", "to": "Arya", "value": 131, "width": 1}, {"from": "Joffrey", "to": "Rodrik", "value": 17, "width": 1}, {"from": "Joffrey", "to": "Tyrion", "value": 19, "width": 1}, {"from": "Joffrey", "to": "Lady", "value": 18, "width": 1}, {"from": "Joffrey", "to": "Myrcella", "value": 21, "width": 1}, {"from": "Joffrey", "to": "Nymeria", "value": 23, "width": 1}, {"from": "Joffrey", "to": "Renly", "value": 9, "width": 1}, {"from": "Joffrey", "to": "Mordane", "value": 36, "width": 1}, {"from": "Joffrey", "to": "Littlefinger", "value": 30, "width": 1}, {"from": "Joffrey", "to": "Stannis", "value": 25, "width": 1}, {"from": "Joffrey", "to": "Barristan", "value": 5, "width": 1}, {"from": "Joffrey", "to": "Janos", "value": 20, "width": 1}, {"from": "Joffrey", "to": "Varys", "value": 20, "width": 1}, {"from": "Joffrey", "to": "Pycelle", "value": 18, "width": 1}, {"from": "Joffrey", "to": "Aemon", "value": 2, "width": 1}, {"from": "Joffrey", "to": "Meryn", "value": 13, "width": 1}, {"from": "Joffrey", "to": "Alliser", "value": 6, "width": 1}, {"from": "Tommen", "to": "Arya", "value": 10, "width": 1}, {"from": "Tommen", "to": "Myrcella", "value": 21, "width": 1}, {"from": "Tommen", "to": "Tyrion", "value": 6, "width": 1}, {"from": "Tyrion", "to": "Yoren", "value": 26, "width": 1}, {"from": "Tyrion", "to": "Littlefinger", "value": 31, "width": 1}, {"from": "Tyrion", "to": "Alliser", "value": 28, "width": 1}, {"from": "Tyrion", "to": "Grenn", "value": 9, "width": 1}, {"from": "Tyrion", "to": "Bowen", "value": 4, "width": 1}, {"from": "Tyrion", "to": "Aemon", "value": 18, "width": 1}, {"from": "Tyrion", "to": "Samwell", "value": 10, "width": 1}, {"from": "Tyrion", "to": "Bronn", "value": 248, "width": 1}, {"from": "Tyrion", "to": "Rodrik", "value": 14, "width": 1}, {"from": "Tyrion", "to": "Marillion", "value": 19, "width": 1}, {"from": "Tyrion", "to": "Tywin", "value": 34, "width": 1}, {"from": "Tyrion", "to": "Arya", "value": 3, "width": 1}, {"from": "Tyrion", "to": "Kevan", "value": 63, "width": 1}, {"from": "Tyrion", "to": "Beric", "value": 3, "width": 1}, {"from": "Tyrion", "to": "Thoros", "value": 4, "width": 1}, {"from": "Tyrion", "to": "Shae", "value": 18, "width": 1}, {"from": "Tyrion", "to": "The Mountain", "value": 4, "width": 1}, {"from": "Tyrion", "to": "Stannis", "value": 9, "width": 1}, {"from": "Tyrion", "to": "Barristan", "value": 6, "width": 1}, {"from": "Arya", "to": "Mordane", "value": 119, "width": 1}, {"from": "Arya", "to": "Myrcella", "value": 22, "width": 1}, {"from": "Arya", "to": "Nymeria", "value": 149, "width": 1}, {"from": "Arya", "to": "Rodrik", "value": 7, "width": 1}, {"from": "Arya", "to": "Lady", "value": 29, "width": 1}, {"from": "Arya", "to": "Littlefinger", "value": 11, "width": 1}, {"from": "Arya", "to": "Syrio", "value": 120, "width": 1}, {"from": "Arya", "to": "Barristan", "value": 4, "width": 1}, {"from": "Arya", "to": "Yoren", "value": 14, "width": 1}, {"from": "Arya", "to": "Rast", "value": 3, "width": 1}, {"from": "Arya", "to": "Alliser", "value": 5, "width": 1}, {"from": "Arya", "to": "Hodor", "value": 4, "width": 1}, {"from": "Arya", "to": "Meryn", "value": 11, "width": 1}, {"from": "Arya", "to": "Renly", "value": 6, "width": 1}, {"from": "Arya", "to": "Rickard", "value": 4, "width": 1}, {"from": "Arya", "to": "Pycelle", "value": 6, "width": 1}, {"from": "Arya", "to": "Olyvar", "value": 1, "width": 1}, {"from": "Arya", "to": "Varys", "value": 5, "width": 1}, {"from": "Rodrik", "to": "Littlefinger", "value": 11, "width": 1}, {"from": "Rodrik", "to": "Marillion", "value": 18, "width": 1}, {"from": "Rodrik", "to": "Mordane", "value": 3, "width": 1}, {"from": "Rodrik", "to": "Bronn", "value": 20, "width": 1}, {"from": "Rodrik", "to": "Edmure", "value": 6, "width": 1}, {"from": "Rodrik", "to": "Osha", "value": 6, "width": 1}, {"from": "Mordane", "to": "Myrcella", "value": 23, "width": 1}, {"from": "Mordane", "to": "Nymeria", "value": 17, "width": 1}, {"from": "Mordane", "to": "Lady", "value": 17, "width": 1}, {"from": "Mordane", "to": "Yohn", "value": 4, "width": 1}, {"from": "Mordane", "to": "Thoros", "value": 6, "width": 1}, {"from": "Mordane", "to": "Barristan", "value": 4, "width": 1}, {"from": "Mordane", "to": "Littlefinger", "value": 5, "width": 1}, {"from": "Mordane", "to": "Loras", "value": 2, "width": 1}, {"from": "Mordane", "to": "The Mountain", "value": 5, "width": 1}, {"from": "Mordane", "to": "Syrio", "value": 8, "width": 1}, {"from": "Myrcella", "to": "Janos", "value": 4, "width": 1}, {"from": "Nymeria", "to": "Lady", "value": 12, "width": 1}, {"from": "Nymeria", "to": "Syrio", "value": 5, "width": 1}, {"from": "Meryn", "to": "Syrio", "value": 17, "width": 1}, {"from": "Meryn", "to": "Barristan", "value": 6, "width": 1}, {"from": "Barristan", "to": "Renly", "value": 11, "width": 1}, {"from": "Barristan", "to": "Pycelle", "value": 6, "width": 1}, {"from": "Barristan", "to": "Littlefinger", "value": 5, "width": 1}, {"from": "Barristan", "to": "Varys", "value": 17, "width": 1}, {"from": "Barristan", "to": "Lancel", "value": 5, "width": 1}, {"from": "Hodor", "to": "Rickard", "value": 6, "width": 1}, {"from": "Hodor", "to": "Pycelle", "value": 4, "width": 1}, {"from": "Hodor", "to": "Greatjon", "value": 6, "width": 1}, {"from": "Hodor", "to": "Osha", "value": 9, "width": 1}, {"from": "Lady", "to": "Rickard", "value": 4, "width": 1}, {"from": "Stannis", "to": "Renly", "value": 45, "width": 1}, {"from": "Stannis", "to": "Pycelle", "value": 12, "width": 1}, {"from": "Stannis", "to": "Gendry", "value": 5, "width": 1}, {"from": "Stannis", "to": "Littlefinger", "value": 3, "width": 1}, {"from": "Stannis", "to": "Kevan", "value": 3, "width": 1}, {"from": "Stannis", "to": "Varys", "value": 9, "width": 1}, {"from": "Stannis", "to": "Thoros", "value": 5, "width": 1}, {"from": "Renly", "to": "Littlefinger", "value": 6, "width": 1}, {"from": "Renly", "to": "Pycelle", "value": 4, "width": 1}, {"from": "Renly", "to": "Janos", "value": 5, "width": 1}, {"from": "Renly", "to": "Loras", "value": 4, "width": 1}, {"from": "Renly", "to": "Kevan", "value": 3, "width": 1}, {"from": "Renly", "to": "Roose", "value": 4, "width": 1}, {"from": "Renly", "to": "Greatjon", "value": 1, "width": 1}, {"from": "Irri", "to": "Doreah", "value": 42, "width": 1}, {"from": "Irri", "to": "Rakharo", "value": 4, "width": 1}, {"from": "Irri", "to": "Mirri", "value": 8, "width": 1}, {"from": "Irri", "to": "Qotho", "value": 6, "width": 1}, {"from": "Doreah", "to": "Qotho", "value": 5, "width": 1}, {"from": "Doreah", "to": "Mirri", "value": 3, "width": 1}, {"from": "Qotho", "to": "Mirri", "value": 64, "width": 1}, {"from": "Qotho", "to": "Rakharo", "value": 8, "width": 1}, {"from": "Yoren", "to": "Grenn", "value": 3, "width": 1}, {"from": "Littlefinger", "to": "Varys", "value": 43, "width": 1}, {"from": "Littlefinger", "to": "Pycelle", "value": 34, "width": 1}, {"from": "Littlefinger", "to": "The Mountain", "value": 3, "width": 1}, {"from": "Littlefinger", "to": "Beric", "value": 5, "width": 1}, {"from": "Varys", "to": "Pycelle", "value": 50, "width": 1}, {"from": "Varys", "to": "Thoros", "value": 3, "width": 1}, {"from": "Varys", "to": "Lancel", "value": 6, "width": 1}, {"from": "Varys", "to": "Kevan", "value": 5, "width": 1}, {"from": "Loras", "to": "Mace", "value": 11, "width": 1}, {"from": "Grenn", "to": "Alliser", "value": 21, "width": 1}, {"from": "Grenn", "to": "Samwell", "value": 11, "width": 1}, {"from": "Grenn", "to": "Rast", "value": 5, "width": 1}, {"from": "Grenn", "to": "Mance", "value": 5, "width": 1}, {"from": "Grenn", "to": "Bowen", "value": 2, "width": 1}, {"from": "Grenn", "to": "Pypar", "value": 4, "width": 1}, {"from": "Grenn", "to": "Othell", "value": 5, "width": 1}, {"from": "Alliser", "to": "Bowen", "value": 21, "width": 1}, {"from": "Alliser", "to": "Rast", "value": 11, "width": 1}, {"from": "Alliser", "to": "Samwell", "value": 5, "width": 1}, {"from": "Alliser", "to": "Aemon", "value": 18, "width": 1}, {"from": "Aemon", "to": "Bowen", "value": 16, "width": 1}, {"from": "Aemon", "to": "Samwell", "value": 18, "width": 1}, {"from": "Aemon", "to": "Pycelle", "value": 5, "width": 1}, {"from": "Bowen", "to": "Samwell", "value": 4, "width": 1}, {"from": "Pycelle", "to": "The Mountain", "value": 2, "width": 1}, {"from": "Pycelle", "to": "Tywin", "value": 3, "width": 1}, {"from": "Pycelle", "to": "Dontos", "value": 3, "width": 1}, {"from": "Pycelle", "to": "Doran", "value": 5, "width": 1}, {"from": "Pycelle", "to": "Janos", "value": 11, "width": 1}, {"from": "Rickard", "to": "Greatjon", "value": 21, "width": 1}, {"from": "Rickard", "to": "Roose", "value": 17, "width": 1}, {"from": "Rickard", "to": "Robett", "value": 6, "width": 1}, {"from": "Rickard", "to": "Osha", "value": 6, "width": 1}, {"from": "Rickard", "to": "The Mountain", "value": 4, "width": 1}, {"from": "Rast", "to": "Samwell", "value": 6, "width": 1}, {"from": "Samwell", "to": "Randyll", "value": 6, "width": 1}, {"from": "Samwell", "to": "Dickon", "value": 2, "width": 1}, {"from": "Samwell", "to": "Pypar", "value": 5, "width": 1}, {"from": "Mace", "to": "Randyll", "value": 5, "width": 1}, {"from": "Mace", "to": "Thoros", "value": 5, "width": 1}, {"from": "Marillion", "to": "Bronn", "value": 12, "width": 1}, {"from": "The Mountain", "to": "Yohn", "value": 5, "width": 1}, {"from": "Thoros", "to": "Anguy", "value": 1, "width": 1}, {"from": "Bronn", "to": "Podrick", "value": 2, "width": 1}, {"from": "Bronn", "to": "Shae", "value": 14, "width": 1}, {"from": "Bronn", "to": "Kevan", "value": 4, "width": 1}, {"from": "Roose", "to": "Robett", "value": 6, "width": 1}, {"from": "Roose", "to": "Greatjon", "value": 11, "width": 1}, {"from": "Roose", "to": "Tywin", "value": 8, "width": 1}, {"from": "Roose", "to": "Kevan", "value": 3, "width": 1}, {"from": "Roose", "to": "Edmure", "value": 4, "width": 1}, {"from": "Rakharo", "to": "Mirri", "value": 7, "width": 1}, {"from": "Tywin", "to": "Kevan", "value": 4, "width": 1}, {"from": "Kevan", "to": "Greatjon", "value": 2, "width": 1}, {"from": "Robett", "to": "Greatjon", "value": 12, "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "forceAtlas2Based": {
+            "avoidOverlap": 0.7,
+            "centralGravity": 0.01,
+            "damping": 0.4,
+            "gravitationalConstant": -100,
+            "springConstant": 0.08,
+            "springLength": 100
+        },
+        "solver": "forceAtlas2Based",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
