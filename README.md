@@ -15,7 +15,7 @@
   <h3>(NLP) Graph analysis and visualization of the GOT Books using NetworkX and Pivys</h3>
   <p>In this project, I worked with the Game of Thrones (GOT) books dataset to perform graph analysis and visualization. I used libraries such as NetworkX and Pivys to analyze the relationships between characters and visualize the network of interactions. This provided insights into the social structure and dynamics within the books.</p>
 
-  <h3>(EDA and APIs)Exploratory Data Analysis Using Youtube Video Data from Valorant Channels</h3>
+  <h3>(EDA and APIs) Exploratory Data Analysis Using Youtube Video Data from Valorant Channels</h3>
    <p>In this project, I conducted exploratory data analysis (EDA) using YouTube video data from Valorant channels. I collected data through APIs and performed EDA to gain insights into video metrics, engagement, and trends. I used visualizations to present the findings and uncover patterns related to Valorant content on YouTube.</p>
   
   <h2>(Guided) Projects</h2>
