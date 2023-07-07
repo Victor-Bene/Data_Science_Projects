@@ -14,8 +14,7 @@
   </div>
   
   <a href="www.linkedin.com/in/victor-benedito">
-  <i class="devicon-linkedin-plain-wordmark colored",height="50px" width="100px"></i></a>
-  <span> Victor Benedito</a></span>
+  <i class="devicon-linkedin-plain-wordmark colored"></i></a>
 </div>
 
   <h2>Overview</h2>
