@@ -7,7 +7,8 @@
 
 <h2>Contact Information</h2>
 <div>
-  <img src="linkedin_logo.png" alt="LinkedIn Logo" height="30px" width="30px">
+  
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" />
   <span>Email: <a href="mailto:victorhlopesbenedito@gmail.com">victorhlopesbenedito@gmail.com</a></span>
 </div>
 
