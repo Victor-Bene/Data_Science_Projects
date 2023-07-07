@@ -10,7 +10,7 @@
   <span>Email: <a href="mailto:victorhlopesbenedito@gmail.com">victorhlopesbenedito@gmail.com</a></span>
 
   </div>
-  
+  <br>
   </div>
   
   <a href="www.linkedin.com/in/victor-benedito">
