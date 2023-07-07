@@ -1,1 +1,14 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Victor-Bene/DataScience_projects/master?labpath=Exploratory%20Data%20Analysis%20Using%20Youtube%20Video%20Data%20from%20Valorant%20Channels%20that%20i'm%20used%20to%20watch%2FData_Analysis_Using_Youtube_Video_Data_from_Valorant_Channels_that_i'm_used_to_watch.ipynb)
+<h2>How to Run the Projects</h2>
+<ol>
+  <li>Clone this repository to your local machine.</li>
+  <li>Make sure you have the necessary dependencies installed. It is recommended to create a virtual environment using Anaconda or Virtualenv.</li>
+  <li>Open the desired project in a Python development environment such as Jupyter Notebook.</li>
+  <li>Execute the code cells one by one to reproduce the results and visualizations.</li>
+</ol>
+
+<h3>Project Overview</h3>
+<p>This project focuses on Natural Language Processing (NLP) and involves building a system to establish relationships between entities. The project includes rendering NLP entities and analyzing their relationships to extract meaningful insights. Additionally, various metrics about the characters are computed to gain further understanding of the data.</p>
+
+<p>This is just a screenshot of the dynamic graph made in the project.</p>
+
+<img src="https://github.com/Victor-Bene/DataScience_projects/assets/133928660/caf08621-dd6f-4aaa-bb2f-d1fb0b10c717" alt="Project Image">
