@@ -1,0 +1,1 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Victor-Bene/DataScience_projects/HEAD?labpath=Graph%20analysis%20and%20visualization%20of%20the%20GOT%20Books%20using%20NetworkX%20and%20Pivys%2FGraph_analysis_and_visualization_of_the_GOT_Books_using_NetworkX_and_Pivys.ipynb)
