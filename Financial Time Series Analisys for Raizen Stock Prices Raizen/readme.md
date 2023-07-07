@@ -6,8 +6,8 @@
   <li>Execute the code cells one by one to reproduce the results and visualizations.</li>
 </ol>
 
-<h3>Project Overview</h3>
-<p>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen
-In this project, I explored a dataset of financial time series from Raizen Company and other correlated. I performed exploratory data analysis to identify patterns, trends, and relevant insights. I utilized popular visualization libraries such as matplotlib and seaborn to create graphs and visualizations that aided in understanding the data.</p>
+<h2>Project Overview</h2>
+<h3>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen</h3>
+<p>In this project, I explored a dataset of financial time series from Raizen Company and other correlated. I performed exploratory data analysis to identify patterns, trends, and relevant insights. I utilized popular visualization libraries such as matplotlib and seaborn to create graphs and visualizations that aided in understanding the data.</p>
 
-<img src="https://github.com/Victor-Bene/DataScience_projects/assets/133928660/caf08621-dd6f-4aaa-bb2f-d1fb0b10c717" alt="Project Image">
+<img src="![image](https://github.com/Victor-Bene/DataScience_projects/assets/133928660/bab926b2-543c-4679-9a3c-02100ff24e2c)" alt="Project Image">
