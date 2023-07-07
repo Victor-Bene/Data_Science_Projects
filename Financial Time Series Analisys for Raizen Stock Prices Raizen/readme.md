@@ -1,1 +1,13 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Victor-Bene/DataScience_projects/HEAD?labpath=Graph%20analysis%20and%20visualization%20of%20the%20GOT%20Books%20using%20NetworkX%20and%20Pivys%2FGraph_analysis_and_visualization_of_the_GOT_Books_using_NetworkX_and_Pivys.ipynb)
+<h2>How to Run the Projects</h2>
+<ol>
+  <li>Clone this repository to your local machine.</li>
+  <li>Make sure you have the necessary dependencies installed. It is recommended to create a virtual environment using Anaconda or Virtualenv.</li>
+  <li>Open the desired project in a Python development environment such as Jupyter Notebook.</li>
+  <li>Execute the code cells one by one to reproduce the results and visualizations.</li>
+</ol>
+
+<h3>Project Overview</h3>
+<p>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen
+In this project, I explored a dataset of financial time series from Raizen Company and other correlated. I performed exploratory data analysis to identify patterns, trends, and relevant insights. I utilized popular visualization libraries such as matplotlib and seaborn to create graphs and visualizations that aided in understanding the data.</p>
+
+<img src="https://github.com/Victor-Bene/DataScience_projects/assets/133928660/caf08621-dd6f-4aaa-bb2f-d1fb0b10c717" alt="Project Image">
