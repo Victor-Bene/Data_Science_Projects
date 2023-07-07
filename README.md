@@ -7,15 +7,17 @@
 
 <h2>Contact Information</h2>
 <div>
-  <span>Email: <a href="mailto:victorhlopesbenedito@gmail.com">victorhlopesbenedito@gmail.com</a></span>
+
+  <a href="www.linkedin.com/in/victor-benedito">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg",height="50px" width="50px" />
+          </a>
 
   </div>
   <br>
   </div>
-  
-  <a href="www.linkedin.com/in/victor-benedito">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg",height="50px" width="50px" />
-          </a>
+
+  <span>Email: <a href="mailto:victorhlopesbenedito@gmail.com">victorhlopesbenedito@gmail.com</a></span>
+
 </div>
 
   <h2>Overview</h2>
