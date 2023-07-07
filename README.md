@@ -44,7 +44,7 @@
   <h2>Technologies Used</h2>
   <ul>
     <li>Python</li>
-    <li>Jupyter Notebook</li>
+    <li>Jupyter Notebook/GColab</li>
     <li>Data Science Libraries like pandas, numpy, and scikit-learn</li>
     <li>Visualization Libraries like matplotlib and seaborn</li>
     <li>Deep Learning Libraries like Keras</li>
