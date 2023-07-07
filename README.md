@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Data Science Portfolio</title>
 </head>
 <body>
   <h1>Data Science Portfolio</h1>
