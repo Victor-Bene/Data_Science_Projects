@@ -8,7 +8,8 @@
 <h2>Contact Information</h2>
 <div>
 
-  <a href="www.linkedin.com/in/victor-benedito"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg",height="50px" width="50px"/></a>
+  <a href="linkedin.com/in/victor-benedito">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg",height="50px" width="50px"/></a>
   <br>
   </div>
 
