@@ -22,7 +22,7 @@
   
   <h2>(Non Guided) Projects</h2>
   
-  <h3>(Pandas/Matplotlib/Seaborn) Global Fuel Consumption & Production An Exploratory Data Analysis (Most Recent Project)</h3>
+  <h3>(Pandas/Matplotlib/Seaborn) Global Fuel Consumption & Production An Exploratory Data Analysis</h3>
 <p>In this project data will be analysed to have insights, projections and thoughts about fossil fuel consumption and production in a worldwide scale. By exploring data on a worldwide scale, I seek to enhance my storytelling capabilities and elevate proficiency in Power BI.</p>
 
   <h3>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen</h3>
