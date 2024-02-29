@@ -7,7 +7,6 @@
 </ol>
 
 <h2>Project Overview</h2>
-<h3>(NLP/NetworkX/Pyvis) Graph analysis and visualization of the GOT Books using NetworkX and Pivys</h3>
-<p>This project focuses on Natural Language Processing (NLP) and involves building a system to establish relationships between entities. The project includes rendering NLP entities and analyzing their relationships to extract meaningful insights. Additionally, various metrics about the characters are computed to gain further understanding of the data.</p>
+<h3>(Pandas/Matplotlib/Seaborn) Global Fuel Consumption & Production An Exploratory Data Analysis</h3>
+<p>In this project data will be analysed to have insights, projections and thoughts about fossil fuel consumption and production in a worldwide scale. By exploring data on a worldwide scale, I seek to enhance my storytelling capabilities and elevate proficiency in Power BI.</p>
 
-<img src="https://github.com/Victor-Bene/DataScience_projects/assets/133928660/caf08621-dd6f-4aaa-bb2f-d1fb0b10c717" alt="Project Image">
