@@ -21,6 +21,10 @@
   <p>In this repository, you will find a well-organized collection of projects, with detailed information about each one. Each project includes a description, details about the dataset used, techniques and tools employed, as well as key findings and learnings.</p>
   
   <h2>(Non Guided) Projects</h2>
+  
+  <h3>(Pandas/Matplotlib/Seaborn) Global Fuel Consumption & Production An Exploratory Data Analysis (Most Recent Project)</h3>
+<p>In this project data will be analysed to have insights, projections and thoughts about fossil fuel consumption and production in a worldwide scale. By exploring data on a worldwide scale, I seek to enhance my storytelling capabilities and elevate proficiency in Power BI.</p>
+
   <h3>(SARIMA/RNN/LSTM) Financial Time Series Analisys for Raizen Stock Prices Raizen</h3>
   <p>In this project, I explored a dataset of financial time series from Raizen Company and other correlated. I performed exploratory data analysis to identify patterns, trends, and relevant insights. I utilized popular visualization libraries such as matplotlib and seaborn to create graphs and visualizations that aided in understanding the data.</p>
 
